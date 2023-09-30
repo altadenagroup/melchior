@@ -70,8 +70,10 @@ export class CommandLoaderPlugin extends Plugin {
         }
       )
       // FIXME: figure out how to type this
-      // @ts-expect-error but for now, this works
-      client.use(new Scenes.Stage(scenes.map((scene) => scene.default)))
+      // @ts-expect-error but for now, it should work
+      client.use(
+        new Scenes.Stage(scenes.map((scene) => scene.default)).middleware()
+      )
       info('plugins.commandLoader', `loaded ${loadedScenes} scenes`)
     }
 
