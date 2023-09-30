@@ -30,16 +30,8 @@ export class Client extends Telegraf<Context> {
 
     const start = () =>
       super.launch().catch((err) => {
-        info(
-          'melchior',
-          `got an error: ${err}; will retry in ${
-            this.#melchiorOptions.clientReconnectionInterval / 1000
-          } seconds`
-        )
-        setTimeout(
-          () => start(),
-          this.#melchiorOptions.clientReconnectionInterval
-        )
+        info('melchior', `got an error: ${err}; will try again now`)
+        return start()
       })
 
     return start()
