@@ -1,4 +1,4 @@
-import { Telegraf } from 'telegraf'
+import { session, Telegraf } from 'telegraf'
 import { info } from '../tools/index.js'
 import { ClientOptions, Context } from '../types/index.js'
 import { Plugin } from './plugin.js'
@@ -19,6 +19,7 @@ export class Client extends Telegraf<Context> {
     process.once('SIGINT', () => this.stop('SIGINT'))
     process.once('SIGTERM', () => this.stop('SIGTERM'))
 
+    this.use(session())
     this.use(this.#middleware)
   }
 
