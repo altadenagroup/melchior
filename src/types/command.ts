@@ -1,8 +1,10 @@
 import Telegraf from 'telegraf'
+import { SceneContextScene } from 'telegraf/scenes'
 import { LoadedModule } from './loader.js'
 
 export interface Context extends Telegraf.Context {
   replyHTML: (text: string, extra: any) => Promise<unknown>
+  scene: SceneContextScene<Telegraf.Context>
 }
 
 export type CommandFunction = (ctx: Context) => never | Promise<never>
