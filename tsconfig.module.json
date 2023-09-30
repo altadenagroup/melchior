@@ -3,7 +3,9 @@
   "compilerOptions": {
     "target": "esnext",
     "outDir": "lib/module",
-    "module": "esnext"
+    "module": "nodenext",
+    "inlineSourceMap": true,
+    "moduleResolution": "nodenext"
   },
   "exclude": ["node_modules/**"]
 }
