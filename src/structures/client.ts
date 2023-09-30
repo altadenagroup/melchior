@@ -4,7 +4,6 @@ import { ClientOptions, Context } from '../types/index.js'
 import { Plugin } from './plugin.js'
 
 const clientDefaultOptions: ClientOptions = {
-  clientReconnectionInterval: 5000,
   plugins: []
 }
 
@@ -28,7 +27,7 @@ export class Client extends Telegraf<Context> {
       this.#melchiorOptions.plugins.map((plugin) => this.#loadPlugin(plugin))
     )
 
-    const start = () =>
+    const start: () => Promise<any> = () =>
       super.launch().catch((err) => {
         info('melchior', `got an error: ${err}; will try again now`)
         return start()
