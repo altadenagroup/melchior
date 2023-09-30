@@ -60,6 +60,7 @@ export class CommandLoaderPlugin extends Plugin {
 
   async onLoad(client: Client, loadOnlyCommands = false) {
     await super.onLoad(client)
+
     if (!loadOnlyCommands && this.config.sceneDirectory) {
       let loadedScenes = 0
       const scenes = await importAll<SceneModule>(
@@ -69,8 +70,8 @@ export class CommandLoaderPlugin extends Plugin {
         }
       )
       // FIXME: figure out how to type this
-      // @ts-expect-error but, for now, we'll pretend it's fine since it works just fine.
-      this.client.use(new Scenes.Stage(scenes.map((scene) => scene.default)))
+      // @ts-expect-error but for now, this works
+      client.use(new Scenes.Stage(scenes.map((scene) => scene.default)))
       info('plugins.commandLoader', `loaded ${loadedScenes} scenes`)
     }
 
