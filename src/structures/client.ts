@@ -42,6 +42,7 @@ export class Client extends Telegraf<Context> {
       this.#unloadPlugin(plugin)
     )
     super.stop(reason)
+    process.exit(0)
   }
 
   #middleware(ctx: Context, next: () => Promise<void>) {
