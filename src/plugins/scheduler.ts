@@ -38,7 +38,11 @@ export class SchedulerPlugin extends Plugin {
     )
 
     schedules.forEach((schedule: SchedulerModule) => {
-      cron.schedule(schedule.schedule, schedule.default)
+      cron.schedule(
+        schedule.schedule,
+        schedule.default,
+        this.config.timezone ? { timezone: this.config.timezone } : undefined
+      )
     })
 
     info('plugins.scheduler', `loaded ${loadedSchedules} cron schedules`)

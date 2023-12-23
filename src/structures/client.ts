@@ -1,7 +1,8 @@
 import { session, Telegraf } from 'telegraf'
-import { info } from '../tools/index.js'
+import { debug, info } from '../tools/index.js'
 import { ClientOptions, Context } from '../types/index.js'
 import { Plugin } from './plugin.js'
+import { DatabasePlugin } from '../plugins/index.js'
 
 const clientDefaultOptions: ClientOptions = {
   plugins: []
@@ -19,17 +20,36 @@ export class Client extends Telegraf<Context> {
     process.once('SIGTERM', () => this.stop('SIGTERM'))
 
     this.use(session())
-    this.use(this.#middleware)
+    this.use(this.#middleware.bind(this))
+    if (process.env.MELCHIOR_LOAD_PLUGINS_BEFORE_INIT === 'true') {
+      this.#launchPlugins().then(() =>
+        info('melchior', 'plugins were early loaded')
+      )
+    }
   }
 
-  public async launch() {
+  get database(): DatabasePlugin {
+    // check if the database plugin is loaded
+    const databasePlugin = this.#melchiorOptions.plugins.find(
+      (plugin) => plugin.identifier === 'database'
+    )
+    if (!databasePlugin) {
+      throw new Error('Database plugin is not loaded')
+    }
+    return databasePlugin as DatabasePlugin
+  }
+
+  async #launchPlugins() {
     await Promise.all(
       this.#melchiorOptions.plugins.map((plugin) => this.#loadPlugin(plugin))
     )
+  }
 
+  public async launch() {
+    await this.#launchPlugins()
     const start: () => Promise<any> = () =>
       super.launch().catch((err) => {
-        info('melchior', `got an error: ${err}; will try again now`)
+        info('melchior', `got an error:\n${err.stack}`)
         return start()
       })
 
@@ -48,6 +68,8 @@ export class Client extends Telegraf<Context> {
   #middleware(ctx: Context, next: () => Promise<void>) {
     ctx.replyHTML = (text: string, extra: any) =>
       ctx.reply(text, { ...(extra ?? {}), parse_mode: 'HTML' })
+
+    ctx.database = this.database
     return next()
   }
 
