@@ -1,4 +1,4 @@
-import { Client } from '../../lib/index.js'
+import { Client, error, info } from '../../lib/index.js'
 import { CommandLoaderPlugin } from '../../lib/plugins/command-loader.js'
 import { DatabasePlugin, MongoDBProvider } from '../../lib/plugins/index.js'
 
@@ -22,3 +22,8 @@ const client = new Client(
 )
 
 client.launch()
+info('bot', 'waiting for health checkup...')
+client.isBotHealthy().then((r) => {
+  r ? info('bot', 'bot is healthy') : error('bot', 'bot is unhealthy')
+  process.exit(r ? 0 : 1)
+})
