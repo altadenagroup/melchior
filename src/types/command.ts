@@ -4,7 +4,7 @@ import { LoadedModule } from './loader.js'
 import { DatabasePlugin } from '../plugins/database/index.js'
 
 export interface Context extends Telegraf.Context {
-  database: DatabasePlugin
+  database: DatabasePlugin | undefined
   replyHTML: (text: string, extra: any) => Promise<unknown>
   scene: SceneContextScene<Telegraf.Context>
 }
