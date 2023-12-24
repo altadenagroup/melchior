@@ -71,6 +71,10 @@ export class Client extends Telegraf<Context> {
     return Promise.resolve(true)
   }
 
+  get isDatabasePluginPresent(): boolean {
+    return !!this.#melchiorOptions.plugins.find((plugin) => plugin.identifier === 'database')
+  }
+
   get database(): DatabasePlugin {
     // check if the database plugin is loaded
     const databasePlugin = this.#melchiorOptions.plugins.find(
@@ -114,7 +118,7 @@ export class Client extends Telegraf<Context> {
     ctx.replyHTML = (text: string, extra: any) =>
       ctx.reply(text, { ...(extra ?? {}), parse_mode: 'HTML' })
 
-    ctx.database = this.database
+    ctx.database = this.isDatabasePluginPresent ? this.database : undefined
     return next()
   }
 
