@@ -1,6 +1,6 @@
 {
   "name": "melchior",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "smart framework for telegram bots",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -19,16 +19,16 @@
     "prepare": "husky install"
   },
   "devDependencies": {
-    "@commitlint/cli": "^18.4.3",
-    "@commitlint/config-conventional": "^18.4.3",
+    "@commitlint/cli": "^18.6.1",
+    "@commitlint/config-conventional": "^18.6.2",
     "@types/node-cron": "^3.0.11",
-    "husky": "^8.0.3",
-    "lint-staged": "^15.2.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
     "npm-run-all": "^4.1.5",
     "open-cli": "^8.0.0",
-    "prettier": "^3.1.1",
+    "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
-    "typedoc": "^0.25.4",
+    "typedoc": "^0.25.8",
     "typescript": "^5.3.3"
   },
   "files": [
