@@ -2,7 +2,6 @@ import { session, Telegraf } from 'telegraf'
 import { debug, error, info } from '../tools/index.js'
 import { ClientOptions, Context } from '../types/index.js'
 import { Plugin } from './plugin.js'
-import { DatabasePlugin } from '../plugins/index.js'
 
 const clientDefaultOptions: ClientOptions = {
   plugins: [],
@@ -71,21 +70,6 @@ export class Client extends Telegraf<Context> {
     return Promise.resolve(true)
   }
 
-  get isDatabasePluginPresent(): boolean {
-    return !!this.#melchiorOptions.plugins.find((plugin) => plugin.identifier === 'database')
-  }
-
-  get database(): DatabasePlugin {
-    // check if the database plugin is loaded
-    const databasePlugin = this.#melchiorOptions.plugins.find(
-      (plugin) => plugin.identifier === 'database'
-    )
-    if (!databasePlugin) {
-      throw new Error('Database plugin is not loaded')
-    }
-    return databasePlugin as DatabasePlugin
-  }
-
   async #launchPlugins() {
     await Promise.all(
       this.#melchiorOptions.plugins.map((plugin) => this.#loadPlugin(plugin))
@@ -118,7 +102,6 @@ export class Client extends Telegraf<Context> {
     ctx.replyHTML = (text: string, extra: any) =>
       ctx.reply(text, { ...(extra ?? {}), parse_mode: 'HTML' })
 
-    ctx.database = this.isDatabasePluginPresent ? this.database : undefined
     return next()
   }
 
