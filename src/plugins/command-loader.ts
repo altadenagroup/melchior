@@ -82,7 +82,7 @@ export class CommandLoaderPlugin extends Plugin {
     await importAll<CommandModule>(
       this.config.commandDirectory,
       (module, fileName) => {
-        const name = module.info?.name ?? fileName.replace('.js', '').replace('.ts, '')
+        const name = module.info?.name ?? fileName.replace('.js', '').replace('.ts', '')
         const info = { ...(module.info || {}), name }
         this.registry.set(name, { default: module.default, info })
         client.command(info.name, this.#wrap(info.name))
@@ -100,7 +100,7 @@ export class CommandLoaderPlugin extends Plugin {
       await importAll<GuardModule>(
         this.config.guardDirectory,
         (module, fileName) => {
-          const name = fileName.replace('.js', '').replace('.ts, '')
+          const name = fileName.replace('.js', '').replace('.ts', '')
           this.guards.set(name, module.default)
           loadedGuards++
         }
