@@ -9,7 +9,7 @@ export const importAll = async <T extends LoadedModule<any>>(
   cb: LoadCallback<T> = defaultFunction
 ) => {
   const list = readdirSync(resolve(directory)).filter(
-    (a) => a.endsWith('.js') || a.endsWith('.mjs')
+    (a) => a.endsWith('.js') || a.endsWith('.mjs') || a.endsWith('.ts')
   )
   const d = await Promise.all(
     list.map((r) => import('file://' + resolve(directory, r))) as Promise<T>[]
