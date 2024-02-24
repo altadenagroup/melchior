@@ -1,11 +1,12 @@
-import { session, Telegraf } from 'telegraf'
+import { Telegraf, session } from 'telegraf'
 import { debug, error, info } from '../tools/index.js'
 import { ClientOptions, Context } from '../types/index.js'
 import { Plugin } from './plugin.js'
 
 const clientDefaultOptions: ClientOptions = {
   plugins: [],
-  errorThreshold: 5
+  errorThreshold: 5,
+  sessionStore: undefined
 }
 
 export class Client extends Telegraf<Context> {
@@ -20,7 +21,10 @@ export class Client extends Telegraf<Context> {
     process.once('SIGINT', () => this.stop('SIGINT'))
     process.once('SIGTERM', () => this.stop('SIGTERM'))
 
-    this.use(session())
+    if (options?.sessionStore)
+      this.use(session({ store: options?.sessionStore }))
+    else this.use(session())
+
     this.use(this.#middleware.bind(this))
 
     if (process.env.MELCHIOR_LOAD_PLUGINS_BEFORE_INIT === 'true') {
