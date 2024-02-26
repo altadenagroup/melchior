@@ -22,8 +22,13 @@ export class Client extends Telegraf<Context> {
     process.once('SIGTERM', () => this.stop('SIGTERM'))
 
     if (options?.sessionStore)
-      this.use(session({ store: options?.sessionStore }))
-    else this.use(session())
+      this.use(
+        session({
+          store: options?.sessionStore,
+          getSessionKey: options?.getSessionKey
+        })
+      )
+    else this.use(session({ getSessionKey: options?.getSessionKey }))
 
     this.use(this.#middleware.bind(this))
 
@@ -80,10 +85,10 @@ export class Client extends Telegraf<Context> {
     )
   }
 
-  public async launch() {
+  public async launch(conf?: Telegraf.LaunchOptions) {
     await this.#launchPlugins()
     const start: () => Promise<any> = () =>
-      super.launch().catch((err) => {
+      super.launch(conf).catch((err) => {
         error('melchior', `got an error:\n${err.stack}`)
         this.#errorCounter++
         return start()
