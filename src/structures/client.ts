@@ -6,7 +6,8 @@ import { Plugin } from './plugin.js'
 const clientDefaultOptions: ClientOptions = {
   plugins: [],
   errorThreshold: 5,
-  sessionStore: undefined
+  sessionStore: undefined,
+  useSessions: true
 }
 
 export class Client extends Telegraf<Context> {
@@ -21,14 +22,16 @@ export class Client extends Telegraf<Context> {
     process.once('SIGINT', () => this.stop('SIGINT'))
     process.once('SIGTERM', () => this.stop('SIGTERM'))
 
-    if (options?.sessionStore)
+    if (options?.sessionStore) {
       this.use(
         session({
           store: options?.sessionStore,
           getSessionKey: options?.getSessionKey
         })
       )
-    else this.use(session({ getSessionKey: options?.getSessionKey }))
+    } else if (options?.useSessions) {
+      this.use(session({ getSessionKey: options?.getSessionKey }))
+    }
 
     this.use(this.#middleware.bind(this))
 
