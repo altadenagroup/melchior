@@ -10,4 +10,6 @@ export interface ClientOptions {
   sessionStore?: SessionStore<{}>
   /// A custom function to be used when retriving sessions from memory. Useful for advanced scenes that'll take in more than one user's input.
   getSessionKey?: (ctx: Context) => Promise<string | undefined>
+  /// Tells melchior whether it should automatically add the telegraf session middleware.
+  useSessions?: boolean
 }
