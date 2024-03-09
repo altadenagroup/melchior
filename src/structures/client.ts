@@ -33,8 +33,6 @@ export class Client extends Telegraf<Context> {
       this.use(session({ getSessionKey: options?.getSessionKey }))
     }
 
-    this.use(this.#middleware.bind(this))
-
     if (process.env.MELCHIOR_LOAD_PLUGINS_BEFORE_INIT === 'true') {
       this.#launchPlugins().then(() =>
         info('melchior', 'plugins were early loaded')
@@ -108,13 +106,6 @@ export class Client extends Telegraf<Context> {
     if (this.botInfo) super.stop(reason)
     const nonErrorExitCodes = ['SIGINT', 'SIGTERM']
     process.exit(nonErrorExitCodes.includes(reason) ? 0 : 1)
-  }
-
-  #middleware(ctx: Context, next: () => Promise<void>) {
-    ctx.replyHTML = (text: string, extra: any) =>
-      ctx.reply(text, { ...(extra ?? {}), parse_mode: 'HTML' })
-
-    return next()
   }
 
   async #loadPlugin(plugin: Plugin) {
