@@ -1,48 +1,55 @@
-const ASCII_COLORS = {
-  RED: '\x1b[31m',
-  GREEN: '\x1b[32m',
-  YELLOW: '\x1b[33m',
-  BLUE: '\x1b[34m',
-  MAGENTA: '\x1b[35m',
-  CYAN: '\x1b[36m',
-  WHITE: '\x1b[37m',
-  RESET: '\x1b[0m',
-  BG_RED: '\x1b[41m',
-  BG_GREEN: '\x1b[42m',
-  BG_YELLOW: '\x1b[43m',
-  BG_BLUE: '\x1b[44m',
-  BG_MAGENTA: '\x1b[45m',
-  BG_CYAN: '\x1b[46m',
-  BG_WHITE: '\x1b[47m',
-  FX_BOLD: '\x1b[1m',
-  FX_DIM: '\x1b[2m',
-  FX_ITALIC: '\x1b[3m',
-  FX_UNDERLINE: '\x1b[4m',
-  FX_BLINK: '\x1b[5m',
-  FX_REVERSE: '\x1b[7m',
-  FX_HIDDEN: '\x1b[8m'
+const reset = '\x1b[0m'
+const grey = '\x1b[90m'
+const italics = '\x1b[3m'
+const bold = '\x1b[1m'
+const royalBlue = '\x1b[38;5;21m'
+const fuchsia = '\x1b[35m'
+const rainbowColors = [
+  '\x1b[31m',
+  '\x1b[33m',
+  '\x1b[32m',
+  '\x1b[36m',
+  '\x1b[35m',
+  '\x1b[34m',
+  '\x1b[37m'
+]
+
+export const rainbowify = (str: string): string => {
+  let result = ''
+  for (let i = 0; i < str.length; i++) {
+    result += `${rainbowColors[i % rainbowColors.length]}${str[i]}`
+  }
+  return result
 }
 
-type Printable = string | number | never
-type LogFn = [scope: string, message: Printable]
-
-const useColors = process.env.DISABLE_COLORS !== 'true'
-const reverseIdentifier =
-  process.env.REVERSE_IDENTIFIER ?? 'space.altadena.melchior'
-
-const c = (color: keyof typeof ASCII_COLORS, text: string) =>
-  useColors ? `${ASCII_COLORS[color]}${text}${ASCII_COLORS.RESET}` : text
-const date = () => c('FX_DIM', new Date().toISOString())
-const log = (level: string, scope: string, message: Printable) => {
-  const sc = c('FX_DIM', scope)
-  console.log(`${reverseIdentifier} ${date()} ${level} ${sc}: ${message}`)
+const log = (
+  level: string,
+  asciiColor: string,
+  scope: string,
+  message: string
+) => {
+  const date = new Date()
+  // hh:mm:ss format
+  const time = `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+  const thread = `${fuchsia}main`
+  // pad
+  console.log(
+    `${grey}${time}${reset}  ${thread}${reset}  ${asciiColor}[${level}]${reset} (${italics}${scope}${reset}): ${message}`
+  )
 }
 
-export const info = (...m: LogFn) => log(c('BG_BLUE', '[INF]'), ...m)
-export const error = (...m: LogFn) => log(c('BG_RED', '[ERR]'), ...m)
-export const warning = (...m: LogFn) => log(c('BG_YELLOW', '[WAR]'), ...m)
-export const debug = (...m: LogFn) =>
-  process.env.DEBUGGING && log(c('BG_MAGENTA', '[DBG]'), ...m)
+const pad = (str: number, length: number = 2): string => {
+  return '0'.repeat(length - str.toString().length) + str
+}
+export const info = (scope: string, message: string) =>
+  log('INFOR', '\x1b[32m', scope, message)
+export const warn = (scope: string, message: string) =>
+  log('ALERT', '\x1b[33m', scope, message)
+export const error = (scope: string, message: string) =>
+  log('ERROR', '\x1b[31m', scope, message)
+export const debug = (scope: string, message: string) =>
+  process.env.NODE_ENV !== 'production' &&
+  log('DEBUG', '\x1b[36m', scope, message)
 export const errorCallback = (name: string) => {
   return (err: Error) => error(name, `${err.message}\n${err.stack}`)
 }

@@ -1,4 +1,4 @@
-import { Context, SessionStore } from 'telegraf'
+import { Context, MiddlewareFn, SessionStore } from 'telegraf'
 import { Plugin } from '../structures/index.js'
 
 export interface ClientOptions {
@@ -12,4 +12,6 @@ export interface ClientOptions {
   getSessionKey?: (ctx: Context) => Promise<string | undefined>
   /// Tells melchior whether it should automatically add the telegraf session middleware.
   useSessions?: boolean
+  /// Specifies middleware to be loaded before melchior's own middlewares (such as the session middleware)
+  middlewares: MiddlewareFn<Context>[]
 }

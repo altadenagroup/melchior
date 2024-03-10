@@ -7,7 +7,8 @@ const clientDefaultOptions: ClientOptions = {
   plugins: [],
   errorThreshold: 5,
   sessionStore: undefined,
-  useSessions: true
+  useSessions: true,
+  middlewares: []
 }
 
 export class Client extends Telegraf<Context> {
@@ -21,6 +22,12 @@ export class Client extends Telegraf<Context> {
 
     process.once('SIGINT', () => this.stop('SIGINT'))
     process.once('SIGTERM', () => this.stop('SIGTERM'))
+
+    if (options?.middlewares) {
+      for (const middleware of options.middlewares) {
+        this.use(middleware)
+      }
+    }
 
     if (options?.sessionStore) {
       this.use(
@@ -86,10 +93,14 @@ export class Client extends Telegraf<Context> {
     )
   }
 
-  public async launch(conf?: Telegraf.LaunchOptions) {
+  // @ts-ignore
+  public override async launch(
+    conf: Telegraf.LaunchOptions = {},
+    onLaunch?: () => void
+  ) {
     await this.#launchPlugins()
     const start: () => Promise<any> = () =>
-      super.launch(conf).catch((err) => {
+      super.launch(conf || {}, onLaunch).catch((err) => {
         error('melchior', `got an error:\n${err.stack}`)
         this.#errorCounter++
         return start()
