@@ -9,6 +9,7 @@ import {
   GuardModule,
   SceneModule
 } from '../types/index.js'
+import * as Sentry from '@sentry/node'
 
 export interface CommandLoaderConfiguration {
   commandDirectory: string
@@ -39,21 +40,37 @@ export class CommandLoaderPlugin extends Plugin {
       guardFunctions.map((guard) => guard?.(ctx))
     )
     if (guardResults.some((result) => result === false)) return
-    try {
-      return await fn(ctx)
-    } catch (err: any) {
-      error(
-        'plugins.commandLoader',
-        `got an error while executing ${name}: ${err.stack}`
-      )
-    }
+
+    Sentry.metrics.increment('command-runs', 1, { tags: { name } })
+    return Sentry.startSpan(
+      {
+        op: 'melchior.telegram-command',
+        name
+      },
+      async () => {
+        Sentry.setContext('cmd', {
+          msg: ctx.message,
+          user: ctx.from,
+          chat: ctx.chat
+        })
+        try {
+          return await fn(ctx)
+        } catch (e: any) {
+          error(
+            'plugins.commandLoader',
+            `got an error while executing ${name}: ${e.stack}`
+          )
+          Sentry.captureException(e)
+        }
+      }
+    )
   }
 
   findCommand(name: string) {
     return (
       this.registry.get(name) ??
-      Array.from(this.registry.values()).find(
-        (cmd) => cmd.info?.aliases?.includes?.(name)
+      Array.from(this.registry.values()).find((cmd) =>
+        cmd.info?.aliases?.includes?.(name)
       )
     )
   }
@@ -82,7 +99,8 @@ export class CommandLoaderPlugin extends Plugin {
     await importAll<CommandModule>(
       this.config.commandDirectory,
       (module, fileName) => {
-        const name = module.info?.name ?? fileName.replace('.js', '').replace('.ts', '')
+        const name =
+          module.info?.name ?? fileName.replace('.js', '').replace('.ts', '')
         const info = { ...(module.info || {}), name }
         this.registry.set(name, { default: module.default, info })
         client.command(info.name, this.#wrap(info.name))

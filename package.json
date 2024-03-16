@@ -1,6 +1,6 @@
 {
   "name": "melchior",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "smart framework for telegram bots",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -39,6 +39,7 @@
     "tabWidth": 2
   },
   "dependencies": {
+    "@sentry/node": "^7.107.0",
     "node-cron": "^3.0.3",
     "telegraf": "^4.16.3"
   }
