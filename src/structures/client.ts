@@ -41,7 +41,7 @@ export class Client extends Telegraf<Context> {
     }
 
     if (process.env.MELCHIOR_LOAD_PLUGINS_BEFORE_INIT === 'true') {
-      this.#launchPlugins().then(() =>
+      this.launchPlugins().then(() =>
         info('melchior', 'plugins were early loaded')
       )
     }
@@ -87,7 +87,7 @@ export class Client extends Telegraf<Context> {
     return Promise.resolve(true)
   }
 
-  async #launchPlugins() {
+  async launchPlugins() {
     await Promise.all(
       this.#melchiorOptions.plugins.map((plugin) => this.#loadPlugin(plugin))
     )
@@ -98,7 +98,7 @@ export class Client extends Telegraf<Context> {
     conf: Telegraf.LaunchOptions = {},
     onLaunch?: () => void
   ) {
-    await this.#launchPlugins()
+    await this.launchPlugins()
     const start: () => Promise<any> = () =>
       super.launch(conf || {}, onLaunch).catch((err) => {
         error('melchior', `got an error:\n${err.stack}`)
