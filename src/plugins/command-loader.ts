@@ -54,7 +54,9 @@ export class CommandLoaderPlugin extends Plugin {
           chat: ctx.chat
         })
         try {
-          return await fn(ctx)
+          const r = await fn(ctx).catch((error) => ({ error }))
+          if (r.error) throw r.error
+          return r
         } catch (e: any) {
           error(
             'plugins.commandLoader',
