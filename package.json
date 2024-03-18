@@ -1,6 +1,6 @@
 {
   "name": "melchior",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "smart framework for telegram bots",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
