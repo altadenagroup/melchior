@@ -15,8 +15,12 @@ export class Client extends Telegraf<Context> {
   #melchiorOptions: ClientOptions
   #errorCounter = 0
 
-  constructor(token: string, options?: ClientOptions) {
-    super(token)
+  constructor(
+    token: string,
+    options?: ClientOptions,
+    telegrafOpts: Partial<Telegraf.Options<Context>> | undefined = undefined
+  ) {
+    super(token, telegrafOpts)
     // apply defaults if given options are not complete
     this.#melchiorOptions = { ...clientDefaultOptions, ...options }
 

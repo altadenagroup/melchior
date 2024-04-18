@@ -63,6 +63,7 @@ export class CommandLoaderPlugin extends Plugin {
             `got an error while executing ${name}: ${e.stack}`
           )
           Sentry.captureException(e)
+          return e
         }
       }
     )
