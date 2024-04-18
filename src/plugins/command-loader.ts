@@ -55,7 +55,7 @@ export class CommandLoaderPlugin extends Plugin {
         })
         try {
           const r = await fn(ctx).catch((error) => ({ error }))
-          if (r.error) throw r.error
+          if (r?.error) throw r.error
           return r
         } catch (e: any) {
           error(
